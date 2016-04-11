@@ -13,3 +13,8 @@ In the installation guide, we will use the bookmark plug-in as an example.
  * **For web plug-ins:** copy the html page (in the `web.templates.plugins` folder) to the `./web/templates/plugins` folder of your CVE-Search
  * Edit the ./etc/plugins.txt file of your CVE-Search. An example can be found in this repository's etc folder.
  
+# Developer information
+## Error codes
+ * **011** Plug-in page missing - Your plug-in did not respond to `getPage()`
+ * **012** Plug-in page corrupt - The page your plug-in returned cannot be parsed correctly
+ * **013** Plug-in page not found - The page your plug-in refers to cannot be found
