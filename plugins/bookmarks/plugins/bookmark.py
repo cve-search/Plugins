@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.3
 # -*- coding: utf-8 -*-
 #
-# Config reader to read the configuration file
+# Bookmark plug-in for CVE-Search
 #
 # Software is free software released under the "Modified BSD license"
 #
