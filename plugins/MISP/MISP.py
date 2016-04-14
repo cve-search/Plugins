@@ -58,9 +58,9 @@ class MISP(WebPlugin):
         misp_last = misp.download_last(since)
         # Check data
         if 'message' in misp_last.keys():
-          if misp_last['message'] == 'No matches':                        return "[+] MISP collection updated (0 updates)"
+          if misp_last['message'].lower().startswith('no matches'):       return "[+] MISP collection updated (0 updates)"
           elif misp_last['message'].startswith('Authentication failed.'): return "[-] MISP Authentication failed"
-        if not 'response' in misp_last:                                   return "[-] Error occured while fetching MISP data"
+        if not 'response' in misp_last:   print(misp_last);                                return "[-] Error occured while fetching MISP data"
         # Nothing wrong so far, so let's continue
         bulk =[]
         for entry in progressbar(misp_last['response']):
@@ -98,3 +98,7 @@ class MISP(WebPlugin):
       data += "</table>"
       return {'title': "MISP", 'data': data}
 
+  def search(self, text, **args):
+    threat = {'n': 'Threat',   'd': db.p_queryData(self.collectionName, {'threats': {'$in': [text]}})}
+    misp_tag={'n': 'MISP tag', 'd': db.p_queryData(self.collectionName, {'tags':    {'$in': [text]}})}
+    return [threat, misp_tag]
