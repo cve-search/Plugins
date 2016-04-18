@@ -42,8 +42,8 @@ When programming a plug-in for CVE-Search, there are a few required and recommen
     * onDatabaseUpdate() - **gets triggered when the database gets updated**
     * search(text) - **gets triggered when a database search is requested and should be used to search plug-in collections**
  * To override (when applicable) - Web plug-ins:
-    * getPage(\*\*args) - **return a tupel of the file location of the HTML and a dictionary of the args to fill it in. *Example: return ("bookmarks.html", {"cve": cve})* **
-    * getCVEActions(\*\*args) - **returns a list of dictionaries with action information *Example: return [{'text': 'Bookmark', 'action': 'bookmark', 'icon': 'star-empty'}]* **
-    * onCVEAction(action \*\*args) - **gets triggered when an action button is pressed on the CVE information page**
-    * cvePluginInfo(cve, \*\*args) - **gets the HTML of the plug-in information of the CVE *Example: return {'title': "Bookmarks", 'data': "&lt;b&gt; Bookmarked &lt;/b&gt;"}* **
+    * getPage(\*\*args) - __return a tupel of the file location of the HTML and a dictionary of the args to fill it in. *Example: return ("bookmarks.html", {"cve": cve})*__
+    * getCVEActions(\*\*args) - __returns a list of dictionaries with action information *Example: return [{'text': 'Bookmark', 'action': 'bookmark', 'icon': 'star-empty'}]*__
+    * onCVEAction(action \*\*args) - __gets triggered when an action button is pressed on the CVE information page__
+    * cvePluginInfo(cve, \*\*args) - __gets the HTML of the plug-in information of the CVE *Example: return {'title': "Bookmarks", 'data': "&lt;b&gt; Bookmarked &lt;/b&gt;"}*__
     
