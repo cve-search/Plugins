@@ -99,6 +99,6 @@ class MISP(WebPlugin):
       return {'title': "MISP", 'data': data}
 
   def search(self, text, **args):
-    threat = {'n': 'Threat',   'd': db.p_queryData(self.collectionName, {'threats': {'$in': [text]}})}
-    misp_tag={'n': 'MISP tag', 'd': db.p_queryData(self.collectionName, {'tags':    {'$in': [text]}})}
+    threat = {'n': 'Threat',   'd': db.p_queryData(self.collectionName, {'threats': {"$regex": text, "$options": "-i"}})}
+    misp_tag={'n': 'MISP tag', 'd': db.p_queryData(self.collectionName, {'tags':    {"$regex": text, "$options": "-i"}})}
     return [threat, misp_tag]
