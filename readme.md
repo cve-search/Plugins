@@ -18,3 +18,32 @@ In the installation guide, we will use the bookmark plug-in as an example.
  * **011** Plug-in page missing - Your plug-in did not respond to `getPage()`
  * **012** Plug-in page corrupt - The page your plug-in returned cannot be parsed correctly
  * **013** Plug-in page not found - The page your plug-in refers to cannot be found
+
+## Variables
+When programming a plug-in for CVE-Search, there are a few required and recommended variables.
+
+ * Required
+    * self.name - **the full name of the plug-in**
+ * Defaults to be overridden if needed
+    * self.requiresAuth - **is authentication require to use the plug-in?** - *default: False*
+ * Recommended
+    * self.collectionName - **The name of the collection in the database** - We recommend this to ensure you use the same collection accross your plug-in
+
+## Functions
+ There are a few functions you should and should not override. Here is a list
+ 
+ * Do not override:
+    * getName()
+    * getUID()
+    * setUID(uid)
+    * isWebPlugin()
+ * To override (when applicable) - All plug-ins:
+    * loadSettings(reader) - **loads specified settings from the plug-in settings file**
+    * onDatabaseUpdate() - **gets triggered when the database gets updated**
+    * search(text) - **gets triggered when a database search is requested and should be used to search plug-in collections**
+ * To override (when applicable) - Web plug-ins:
+    * getPage(\*\*args) - **return a tupel of the file location of the HTML and a dictionary of the args to fill it in. *Example: return ("bookmarks.html", {"cve": cve})* **
+    * getCVEActions(\*\*args) - **returns a list of dictionaries with action information *Example: return [{'text': 'Bookmark', 'action': 'bookmark', 'icon': 'star-empty'}]* **
+    * onCVEAction(action \*\*args) - **gets triggered when an action button is pressed on the CVE information page**
+    * cvePluginInfo(cve, \*\*args) - **gets the HTML of the plug-in information of the CVE *Example: return {'title': "Bookmarks", 'data': "&lt;b&gt; Bookmarked &lt;/b&gt;"}* **
+    
