@@ -1,3 +1,13 @@
+## Minimum required imports
+import os
+import sys
+import __main__
+callLocation = os.path.dirname(os.path.realpath(__main__.__file__))
+sys.path.append(os.path.join(callLocation, ".."))
+
+import lib.DatabaseLayer as db
+from lib.Plugins import Plugin, WebPlugin
+
 ## The class name should be the same as the file name
 class template(WebPlugin):
 ## You may also wish to inherit from Plug-in, if your plug-in is not related to the web interface
@@ -105,8 +115,16 @@ class template(WebPlugin):
     # print("The template opened %s"%cve)
     pass 
 
-
-  
-  
-  
-  
+## Database functions for plug-ins are:
+# db.p_writeSetting(collection, setting, value)
+# db.p_readSetting(collection, setting)
+## Query Data
+# db.p_queryData(collection, query)
+# db.p_queryOne(collection, query)
+## Record manipulation
+# db.p_addEntry(collection, data)
+# db.p_removeEntry(collection, query)
+# db.p_bulkUpdate(collection, query, data)
+## List manipulation
+# db.p_addToList(collection, query, listname, data)
+# db.p_removeFromList(collection, query, listname, data)
