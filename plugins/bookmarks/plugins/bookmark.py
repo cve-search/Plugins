@@ -31,9 +31,9 @@ class bookmark(WebPlugin):
     page="bookmarks.html"
     return (page, {"cve": cve})
 
-  def getCVEActions(self, **args):
+  def getCVEActions(self, cve, **args):
     userdata = db.p_queryOne(self.collectionName, {'user': args["current_user"].get_id()})
-    if userdata and 'bookmarks' in  userdata and args['cve'] in userdata['bookmarks']:
+    if userdata and 'bookmarks' in  userdata and cve in userdata['bookmarks']:
       return [{'text': 'Remove bookmark', 'action': 'unbookmark', 'icon': 'star'}]
     else:
       return [{'text': 'Bookmark', 'action': 'bookmark', 'icon': 'star-empty'}]
