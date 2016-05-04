@@ -49,14 +49,6 @@ class notes(WebPlugin):
     if note:
       db.p_removeFromList(self.collectionName, {'cve': cve}, "notes", note[0])
 
-  def getCVEActions(self, cve, **args):
-    data = db.p_queryOne(self.collectionName, {'cve': cve})
-    user = args["current_user"].get_id()
-    if data and 'notes' in  data and user in [x["user"] for x in data['notes']]:
-      return [{'text': 'Delete Notes', 'action': 'delete_notes', 'icon': 'remove'}]
-    else:
-      return [{'text': 'Add Notes', 'action': 'add_notes', 'icon': 'list-alt'}]
-
   def cvePluginInfo(self, cve, **args):
     if not args["current_user"].is_authenticated(): return
     returnData = ""
@@ -85,5 +77,6 @@ class notes(WebPlugin):
         db.p_writeSetting(self.collectionName, "last_note", nid)
         return True
       elif action == "delete":
+        user = args["current_user"].get_id()
         self._deleteIfExists(cve, user, int(args["fields"]["id"][0]))
         return True
