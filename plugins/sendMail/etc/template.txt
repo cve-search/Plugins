@@ -1,0 +1,12 @@
+Dear Technical Team,
+
+Could you kindly assess the following vulnerability?
+More information can be found at https://cve.circl.lu/cve/<<CVE>>
+Thanks in advance
+
+<<CVE>>                <<CVSS>>
+<<Subject>>
+
+<<Sources>>
+
+<<CWE>>
