@@ -27,7 +27,9 @@ class bookmark(WebPlugin):
 
   def getPage(self, **args):
     cvesp = cves.last(rankinglookup=True, namelookup=True, vfeedlookup=True, capeclookup=True,subscorelookup=True)
-    cve=[cvesp.getcve(cveid=x) for x in db.p_queryOne(self.collectionName, {"user": args["current_user"].get_id()})['bookmarks']]
+    data = db.p_queryOne(self.collectionName, {"user": args["current_user"].get_id()})
+    bookmarks = data.get("bookmarks", []) if data else []
+    cve=[cvesp.getcve(cveid=x) for x in bookmarks]
     page="bookmarks.html"
     return (page, {"cve": cve})
 
