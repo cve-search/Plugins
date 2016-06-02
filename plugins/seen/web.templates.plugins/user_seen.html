@@ -6,16 +6,16 @@
       $('#buttons').val("{{buttons}}");
       $('#mark').val("{{mark}}");
       $('#filters').val("{{filters}}");
+      $('#markcolor').val("{{markcolor}}");
     })
     function saveSettings(){
-      data = {mode:    $('#mode').val(),
-              buttons: $('#buttons').val(),
-              mark:    $('#mark').val(),
-              filters: $('#filters').val()}
+      data = {mode:      $('#mode').val(),
+              buttons:   $('#buttons').val(),
+              mark:      $('#mark').val(),
+              filters:   $('#filters').val(),
+              markcolor: $('#markcolor').val()}
       $.getJSON('/plugin/{{uid}}/_cve_action/save_settings',data,function(data){
-        if( parseStatus(data)){
-          setStatus("Settings saved!", "success");
-        }
+        if( parseStatus(data)){ setStatus("Settings saved!", "success"); }
       });
     }
   </script>
@@ -56,6 +56,12 @@
             <option value="show">show</option>
             <option value="hide">hide</option>
           </select>
+        </td>
+      </tr>
+      <tr>
+        <td>Mark color</td>
+        <td>
+          <input type="color" id="markcolor">
         </td>
       </tr>
       <tr>

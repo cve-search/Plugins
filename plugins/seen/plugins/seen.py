@@ -9,6 +9,7 @@
 
 # Necessary imports 
 import os
+import re
 import sys
 import __main__
 callLocation = os.path.dirname(os.path.realpath(__main__.__file__))
@@ -48,20 +49,24 @@ class seen(WebPlugin):
         elif action == "unsee":
           db.p_removeFromList(self.collectionName, query, "cves", cve)
         elif action == "save_settings":
-          mode    = args["fields"]["mode"][0]
-          buttons = args["fields"]["buttons"][0]
-          mark    = args["fields"]["mark"][0]
-          filters = args["fields"]["filters"][0]
-          if (mode    in ["auto", "manual"] and buttons in ["show", "hide"]   and
-              mark    in ["show", "hide"]   and filters in ["show", "hide"]):
+          mode      = args["fields"]["mode"][0]
+          buttons   = args["fields"]["buttons"][0]
+          mark      = args["fields"]["mark"][0]
+          filters   = args["fields"]["filters"][0]
+          markcolor = args["fields"]["markcolor"][0]
+          if (mode    in ["auto", "manual"] and buttons in ["show", "hide"] and
+              mark    in ["show", "hide"]   and filters in ["show", "hide"] and
+               re.match("^#[0-9A-Fa-f]{6}$", markcolor)):
             db.p_writeUserSetting(self.collectionName, args["current_user"].get_id(), "mode", mode)
             db.p_writeUserSetting(self.collectionName, args["current_user"].get_id(), "buttons", buttons)
             db.p_writeUserSetting(self.collectionName, args["current_user"].get_id(), "mark", mark)
             db.p_writeUserSetting(self.collectionName, args["current_user"].get_id(), "filters", filters)
+            db.p_writeUserSetting(self.collectionName, args["current_user"].get_id(), "markcolor", markcolor)
           else: return False
         return True
       return False
     except Exception as e:
+      print(e)
       return False
 
   def getFilters(self, **args):
@@ -80,10 +85,12 @@ class seen(WebPlugin):
     return {}
 
   def mark(self, cve, **args):
-    if db.p_readUserSetting(self.collectionName, args["current_user"].get_id(), "mark") == "show":
-      userdata = db.p_queryOne(self.collectionName, {'user': args["current_user"].get_id()})
+    user = args["current_user"].get_id()
+    if db.p_readUserSetting(self.collectionName, user, "mark") == "show":
+      color = db.p_readUserSetting(self.collectionName, user, "markcolor")
+      userdata = db.p_queryOne(self.collectionName, {'user': user})
       if userdata and 'cves' in  userdata and cve in userdata['cves']:
-        return (None, "#778899")
+        return (None, color)
 
   def _getUserSetting(self, user, setting, default):
     s = db.p_readUserSetting(self.collectionName, user, setting)
@@ -94,9 +101,11 @@ class seen(WebPlugin):
 
   def getPage(self, **args):
     if args["current_user"].is_authenticated():
-      mode    = self._getUserSetting(args["current_user"].get_id(), "mode", "auto")
-      buttons = self._getUserSetting(args["current_user"].get_id(), "buttons", "show")
-      mark    = self._getUserSetting(args["current_user"].get_id(), "mark", "show")
-      filters = self._getUserSetting(args["current_user"].get_id(), "filters", "show")
+      mode      = self._getUserSetting(args["current_user"].get_id(), "mode",      "auto")
+      buttons   = self._getUserSetting(args["current_user"].get_id(), "buttons",   "show")
+      mark      = self._getUserSetting(args["current_user"].get_id(), "mark",      "show")
+      filters   = self._getUserSetting(args["current_user"].get_id(), "filters",   "show")
+      markcolor = self._getUserSetting(args["current_user"].get_id(), "markcolor", "#778899")
       page="user_seen.html"
-      return (page, {"mode": mode, "buttons": buttons, "mark": mark, "filters": filters, "uid": self.uid})
+      return (page, {"mode": mode, "buttons": buttons, "mark": mark, "filters": filters,
+                     "markcolor": markcolor, "uid": self.uid})
