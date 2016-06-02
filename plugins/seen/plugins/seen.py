@@ -26,19 +26,18 @@ class seen(WebPlugin):
     self.collectionName = "user_seen"
 
   def getCVEActions(self, cve, **args):
-    userdata = db.p_queryOne(self.collectionName, {'user': args["current_user"].get_id()})
-    if userdata and 'cves' in  userdata and cve in userdata['cves']:
-      return [{'text': 'Unsee', 'action': 'unsee', 'icon': 'eye-close'}]
-    else:
-      return [{'text': 'See',   'action': 'see',   'icon': 'eye-open'}]
+    if db.p_readUserSetting(self.collectionName, args["current_user"].get_id(), "buttons") == "show":
+      userdata = db.p_queryOne(self.collectionName, {'user': args["current_user"].get_id()})
+      if userdata and 'cves' in  userdata and cve in userdata['cves']:
+        return [{'text': 'Unsee', 'action': 'unsee', 'icon': 'eye-close'}]
+      else:
+        return [{'text': 'See',   'action': 'see',   'icon': 'eye-open'}]
 
   def onCVEOpen(self, cve, **args):
-    print("in open")
-    print(cve)
     if args["current_user"].is_authenticated():
-      query = {'user': args["current_user"].get_id()}
-      print(query)
-      db.p_addToList(self.collectionName, query, "cves", cve)
+      if db.p_readUserSetting(self.collectionName, args["current_user"].get_id(), "mode") == "auto":
+        query = {'user': args["current_user"].get_id()}
+        db.p_addToList(self.collectionName, query, "cves", cve)
 
   def onCVEAction(self, cve, action, **args):
     try:
@@ -48,14 +47,27 @@ class seen(WebPlugin):
           db.p_addToList(self.collectionName, query, "cves", cve)
         elif action == "unsee":
           db.p_removeFromList(self.collectionName, query, "cves", cve)
+        elif action == "save_settings":
+          mode    = args["fields"]["mode"][0]
+          buttons = args["fields"]["buttons"][0]
+          mark    = args["fields"]["mark"][0]
+          filters = args["fields"]["filters"][0]
+          if (mode    in ["auto", "manual"] and buttons in ["show", "hide"]   and
+              mark    in ["show", "hide"]   and filters in ["show", "hide"]):
+            db.p_writeUserSetting(self.collectionName, args["current_user"].get_id(), "mode", mode)
+            db.p_writeUserSetting(self.collectionName, args["current_user"].get_id(), "buttons", buttons)
+            db.p_writeUserSetting(self.collectionName, args["current_user"].get_id(), "mark", mark)
+            db.p_writeUserSetting(self.collectionName, args["current_user"].get_id(), "filters", filters)
+          else: return False
         return True
       return False
     except Exception as e:
       return False
 
   def getFilters(self, **args):
-    return [{'id': 'Seen CVEs', 'filters': [{'id': 'hideSeen', 'type': 'select', 'values':[{'id':'show', 'text': 'Show'},
-                                                                                           {'id':'hide', 'text': 'Hide'}]}]}]
+    if db.p_readUserSetting(self.collectionName, args["current_user"].get_id(), "filters") == "show":
+      return [{'id': 'Seen CVEs', 'filters': [{'id': 'hideSeen', 'type': 'select', 'values':[{'id':'show', 'text': 'Show'},
+                                                                                             {'id':'hide', 'text': 'Hide'}]}]}]
 
   def doFilter(self, filters, **args):
     for fil in filters.keys():
@@ -68,6 +80,23 @@ class seen(WebPlugin):
     return {}
 
   def mark(self, cve, **args):
-    userdata = db.p_queryOne(self.collectionName, {'user': args["current_user"].get_id()})
-    if userdata and 'cves' in  userdata and cve in userdata['cves']:
-      return (None, "#778899")
+    if db.p_readUserSetting(self.collectionName, args["current_user"].get_id(), "mark") == "show":
+      userdata = db.p_queryOne(self.collectionName, {'user': args["current_user"].get_id()})
+      if userdata and 'cves' in  userdata and cve in userdata['cves']:
+        return (None, "#778899")
+
+  def _getUserSetting(self, user, setting, default):
+    s = db.p_readUserSetting(self.collectionName, user, setting)
+    if not s:
+      db.p_writeUserSetting(self.collectionName, user, setting, default)
+      s = default
+    return s
+
+  def getPage(self, **args):
+    if args["current_user"].is_authenticated():
+      mode    = self._getUserSetting(args["current_user"].get_id(), "mode", "auto")
+      buttons = self._getUserSetting(args["current_user"].get_id(), "buttons", "show")
+      mark    = self._getUserSetting(args["current_user"].get_id(), "mark", "show")
+      filters = self._getUserSetting(args["current_user"].get_id(), "filters", "show")
+      page="user_seen.html"
+      return (page, {"mode": mode, "buttons": buttons, "mark": mark, "filters": filters, "uid": self.uid})

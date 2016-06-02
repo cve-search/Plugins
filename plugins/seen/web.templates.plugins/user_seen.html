@@ -1,0 +1,74 @@
+{% extends 'layouts/master-page' %}
+{% block head %}
+  <script>
+    jQuery(document).ready(function() {
+      $('#mode').val("{{mode}}");
+      $('#buttons').val("{{buttons}}");
+      $('#mark').val("{{mark}}");
+      $('#filters').val("{{filters}}");
+    })
+    function saveSettings(){
+      data = {mode:    $('#mode').val(),
+              buttons: $('#buttons').val(),
+              mark:    $('#mark').val(),
+              filters: $('#filters').val()}
+      $.getJSON('/plugin/{{uid}}/_cve_action/save_settings',data,function(data){
+        if( parseStatus(data)){
+          setStatus("Settings saved!", "success");
+        }
+      });
+    }
+  </script>
+{% endblock %}
+{% block title %}Seen CVEs settings{% endblock %}
+{% block content %}
+  <!-- breadcrumb -->
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li class="active">Seen CVEs</li>
+  </ol>
+  <!--  Settings -->
+  <div class="well well-small tab">
+    <strong>Settings</strong> <br />
+    <table>
+      <tr>
+        <td>Mode</td>
+        <td>
+          <select id="mode">
+            <option value="auto">  auto  </option>
+            <option value="manual">manual</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>Buttons</td>
+        <td>
+          <select id="buttons">
+            <option value="show">show</option>
+            <option value="hide">hide</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>Mark CVEs</td>
+        <td>
+          <select id="mark">
+            <option value="show">show</option>
+            <option value="hide">hide</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>Filters</td>
+        <td>
+          <select id="filters">
+            <option value="show">show</option>
+            <option value="hide">hide</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+    <button onclick="saveSettings()">Save</button>
+  </div>
+  <!-- End Settings-->
+{% endblock %}
