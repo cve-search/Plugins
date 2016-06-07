@@ -28,7 +28,7 @@ Template: ./etc/template.txt
  * `senduser` is the email address the information is sent from.
    **Required**
  * `sendpass` is the password to the email address the information is
-   sent from. **Required:**
+   sent from. **Required**
  * `recvuser` is the email address the information is sent to.
    **Required**
  * `subject` is the subject of the email. **Default:** Vulnerability to
@@ -45,8 +45,8 @@ Template: ./etc/template.txt
 The template will be sent as the body of the e-mail. Certain tags can be
  used in this body:
 
- * **&lt;&ltCVE&gt;&gt;**" - The CVE ID
- * **&lt;&ltCVSS&gt;&gt;**" - The CVSS
- * **&lt;&ltSubject&gt;&gt;**" - The summary of the CVE
- * **&lt;&ltsources&gt;&gt;**" - The sources of the CVE
- * **&lt;&ltCWE&gt;&gt;**" - The weaknesses targetted by the CVE
+ * **&lt;&lt;CVE&gt;&gt;**" - The CVE ID
+ * **&lt;&lt;CVSS&gt;&gt;**" - The CVSS
+ * **&lt;&lt;Subject&gt;&gt;**" - The summary of the CVE
+ * **&lt;&lt;sources&gt;&gt;**" - The sources of the CVE
+ * **&lt;&lt;CWE&gt;&gt;**" - The weaknesses targetted by the CVE
