@@ -1,9 +1,11 @@
 # About this plug-in
 This plug-in allows users to work together on tasks where actions have
  to be taken for CVEs. It adds a button to the CVE page to check or
- uncheck it and allows filtering through these CVEs. Multiple instances
- of this plug-in can be run, provided you set up the plugins.ini file
- correctly. More information below.
+ uncheck it and allows filtering through these CVEs. The plug-in has
+ several user settings that can be modified to the users taste.
+
+Multiple instances of this plug-in can be run, provided you set up the
+ plugins.ini file correctly. More information below.
 
 # Installation and setup
 The installation of this plug-in is like the installation of any
@@ -26,7 +28,7 @@ collection: soc
  * `name` will be the name displayed in the plug-in info.
    **Default:** Team Colaboration
  * `short name` will be the name displayed in buttons and filters.
-   **Default:** <blank> (nothing)
+   **Default:** &lt;blank&gt; (nothing)
  * `collection` is the collection it will use in the database.
    **Default:** team_collab
 
