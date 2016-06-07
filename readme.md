@@ -13,6 +13,9 @@ In the installation guide, we will use the bookmark plug-in as an example.
  * Copy the content from the `plugins` folder to your CVE-Search's plug-in folder (We suggest ./plugins/, but you can place it anywhere).
  * **For web plug-ins:** copy the html page (in the `web.templates.plugins` folder) to the `./web/templates/plugins` folder of your CVE-Search
  * Edit the ./etc/plugins.txt file of your CVE-Search. An example can be found in this repository's etc folder.
+
+Some plug-ins can load configuration settings. If this is the case, a sample should be provided in the
+ `etc` folder.
  
 # Developer information
 ## Error codes
