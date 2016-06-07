@@ -25,16 +25,16 @@ import lib.DatabaseLayer as db
 class Collaboration(WebPlugin):
   def __init__(self):
     super().__init__()
-    self.name = "Team Colaboration"
+    self.name = "Team Collaboration"
     self.shortName = None
     self.requiresAuth = True
     self.collectionName = self._createCollection()
 
   def loadSettings(self, reader):
     uid = "_"*(len(self.uid)-len(self.uid.strip("_")))
-    self.name  =     reader.read("Colaboration"+uid, "name", "Team Colaboration")
-    self.shortName = reader.read("Colaboration"+uid, "short name", "")
-    collection =     reader.read("Colaboration"+uid, "collection", "").replace(" ", "_")
+    self.name  =     reader.read("Collaboration"+uid, "name", "Team Collaboration")
+    self.shortName = reader.read("Collaboration"+uid, "short name", "")
+    collection =     reader.read("Collaboration"+uid, "collection", "").replace(" ", "_")
     self.collectionName = self._createCollection(collection)
 
   def _getUserSetting(self, user, setting, default):
@@ -126,7 +126,7 @@ class Collaboration(WebPlugin):
       user = args["current_user"].get_id()
       if db.p_readUserSetting(self.collectionName, user, "mark") == "show":
         color = db.p_readUserSetting(self.collectionName, user, "markcolor")
-        userdata = db.p_queryOne(self.collectionName, {'user': user})
+        userdata = db.p_queryOne(self.collectionName, {})
         if userdata and 'cves' in  userdata and cve in userdata['cves']:
           return (None, color)
 
