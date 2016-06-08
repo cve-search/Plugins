@@ -38,7 +38,6 @@ class MISP(WebPlugin):
     self.key = reader.read("MISP", "key", "")
 
   def onDatabaseUpdate(self):
-    output = ""
     lastUpdate = db.p_readSetting(self.collectionName, "last_update")
     now = datetime.utcnow().replace(tzinfo = pytz.utc)
     if lastUpdate:
@@ -60,7 +59,7 @@ class MISP(WebPlugin):
         if 'message' in misp_last.keys():
           if misp_last['message'].lower().startswith('no matches'):       return "[+] MISP collection updated (0 updates)"
           elif misp_last['message'].startswith('Authentication failed.'): return "[-] MISP Authentication failed"
-        if not 'response' in misp_last:   print(misp_last);                                return "[-] Error occured while fetching MISP data"
+        if not 'response' in misp_last:   print(misp_last);               return "[-] Error occured while fetching MISP data"
         # Nothing wrong so far, so let's continue
         bulk =[]
         for entry in progressbar(misp_last['response']):
@@ -99,6 +98,6 @@ class MISP(WebPlugin):
       return {'title': "MISP", 'data': data}
 
   def search(self, text, **args):
-    threat = {'n': 'Threat',   'd': db.p_queryData(self.collectionName, {'threats': {"$regex": text, "$options": "-i"}})}
-    misp_tag={'n': 'MISP tag', 'd': db.p_queryData(self.collectionName, {'tags':    {"$regex": text, "$options": "-i"}})}
-    return [threat, misp_tag]
+    threat   = [x["id"] for x in db.p_queryData(self.collectionName, {'threats': {"$regex": text, "$options": "-i"}})]
+    misp_tag = [x["id"] for x in db.p_queryData(self.collectionName, {'tags':    {"$regex": text, "$options": "-i"}})]
+    return [{'n': 'Threat', 'd': threat}, {'n': 'MISP tag', 'd': misp_tag}]

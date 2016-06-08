@@ -34,8 +34,9 @@ class notes(WebPlugin):
     nid = db.p_readSetting(self.collectionName, "last_note")
     if not nid: db.p_writeSetting(self.collectionName, "last_note", 0)
 
-  def search(self, text): 
-    pass
+  def search(self, text):
+    data = [x["cve"] for x in db.p_queryData(self.collectionName, {"notes.notes":{"$regex": text, "$options": "-i"}})]
+    return [{'n': 'Notes', 'd': data}]
 
   def _getNotesFor(self, cve, user):
     data = db.p_queryOne(self.collectionName, {'cve': cve})
