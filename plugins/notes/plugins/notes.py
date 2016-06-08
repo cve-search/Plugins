@@ -35,7 +35,9 @@ class notes(WebPlugin):
     if not nid: db.p_writeSetting(self.collectionName, "last_note", 0)
 
   def search(self, text, **args):
-    data = [x["cve"] for x in db.p_queryData(self.collectionName, {"notes.notes":{"$regex": text, "$options": "-i"}})]
+    if not args["current_user"].is_authenticated(): return
+    data = [x["cve"] for x in db.p_queryData(self.collectionName, {"notes.notes":{"$regex": text, "$options": "-i"},
+                                                                   "notes.user": args["current_user"].get_id()})]
     return [{'n': 'Notes', 'd': data}]
 
   def _getNotesFor(self, cve, user):
