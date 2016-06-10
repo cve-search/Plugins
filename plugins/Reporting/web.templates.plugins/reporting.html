@@ -1,0 +1,73 @@
+{% extends 'layouts/master-page' %}
+{% block title %}Reporting{% endblock %}
+{% block head %}
+ <!-- css -->
+  <link href="/static/css/custom/filter.css" rel="stylesheet" />
+  <style media="screen" type="text/css">
+    .field{
+      margin: 0px 5px 0px 10px
+    }
+  </style>
+  <!-- javascript -->
+  <script type="text/javascript" src="/static/js/custom/filter.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){ setSettings(); }) 
+    function setSettings(){
+      {% if settings is defined %}
+        {% for key, val in settings.items() %}
+          if($("#{{key}}").is(":checkbox")){
+            if("{{val}}" === "on"){$("#{{key}}").prop('checked', true);}
+          }else{
+            $("#{{key}}").val("{{val}}");
+          }
+        {% endfor %}
+        cvssSelectDisable()
+        timeSelectDisable()
+      {%endif%}
+      prepareFilter()
+    }
+    function prepareFilter(){
+      $("#filterdiv").removeClass("collapse")
+      $("#filter").attr("method", "");
+      $("#filter-toggle").remove()
+      $("#filter").submit(function(){
+        data = {'filter': $("#filter").serialize(),
+                'fields': JSON.stringify(
+                          {'id':            $("#CVE_ID").is(':checked'),
+                           'cvss':          $("#CVSS").is(':checked'),
+                           'summary':       $("#Summary").is(':checked'),
+                           'Modified':      $("#Major").is(':checked'),
+                           'Published':     $("#Published").is(':checked'),
+                           'last-modified': $("#Last_Modified").is(':checked')})}
+        $.getJSON('/plugin/{{plug_id}}/_cve_action/filter',data,function(data){
+          if( parseStatus(data)){
+            var data = window.btoa(data["data"])
+            var lnk = document.createElement("a");
+            lnk.setAttribute("id", "CSV_Report");
+            lnk.download = "Report.csv";
+            lnk.href = "data:application/octet-stream;charset=utf-8;base64,"+data;
+            document.body.appendChild(lnk)
+            $('#CSV_Report')[0].click()
+            $('#CSV_Report').remove()
+          }
+        });
+        return false;
+      })
+    }
+
+  </script>
+{% endblock %}
+{% block content %}
+  <!-- Field options -->
+  <div class="well well-small">
+    <h4>Fields</h4>
+    <span class="field">CVE ID           </span> <input type="checkbox" id="CVE_ID"        checked>
+    <span class="field">CVSS             </span> <input type="checkbox" id="CVSS"          checked>
+    <span class="field">Summary          </span> <input type="checkbox" id="Summary"       checked>
+    <span class="field">Last Major Update</span> <input type="checkbox" id="Major"                >
+    <span class="field">Published        </span> <input type="checkbox" id="Published"     checked>
+    <span class="field">Last Modified    </span> <input type="checkbox" id="Last_Modified"        >
+  </div>
+  <!-- Filter options -->
+  {% include 'subpages/filters.html' %}
+{% endblock %}
