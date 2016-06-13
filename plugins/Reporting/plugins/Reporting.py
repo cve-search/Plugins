@@ -19,10 +19,11 @@ sys.path.append(os.path.join(callLocation, ".."))
 
 import lib.DatabaseLayer as db
 from lib.Plugins import Plugin, WebPlugin
-from lib.Toolkit import convertDateToDBFormat
+from lib.Toolkit import mergeSearchResults
 
 from flask import Response
 from io import StringIO
+from dateutil.parser import parse as parse_datetime
 
 import traceback
 
@@ -72,11 +73,11 @@ class Reporting(WebPlugin):
     if f['cvssSelect'] == "above":    query.append({'cvss': {'$gt': float(f['cvss'])}})
     elif f['cvssSelect'] == "equals": query.append({'cvss': float(f['cvss'])})
     elif f['cvssSelect'] == "below":  query.append({'cvss': {'$lt': float(f['cvss'])}})
-    
+
     # date logic
     if f['timeSelect'] != "all":
-      startDate = convertDateToDBFormat(f['startDate'])
-      endDate = convertDateToDBFormat(f['endDate'])
+      startDate = parse_datetime(f['startDate'], ignoretz=True, dayfirst=True)
+      endDate   = parse_datetime(f['endDate'],   ignoretz=True, dayfirst=True)
       if f['timeSelect'] == "from":
         query.append({f['timeTypeSelect']: {'$gt': startDate}})
       if f['timeSelect'] == "until":
@@ -138,13 +139,26 @@ class Reporting(WebPlugin):
     return (page, {'filters': filters, 'plug_id': self.getUID()})
 
   def onCVEAction(self, cve, action, **args):
-    if action == "filter":
+    if   action == "filter":
       try:
         filters = {x.split("=")[0]: x.split("=")[1] for x in args["fields"]['filter'][0].split("&")}
         fields  = json.loads(args["fields"]["fields"][0])
         limit = 0
         skip = 0
         cves = self.filter_logic(filters, limit, skip, args["plugin_manager"], **args)
+        return {'status': 'plugin_action_complete', 'data': self.generateCSV(cves, fields)}
+      except Exception as e:
+        traceback.print_exc()
+        return False
+    elif action == "textsearch":
+      try:
+        text   = args["fields"]["text"][0]
+        fields = json.loads(args["fields"]["fields"][0])
+        dbResults = db.getSearchResults(text)
+        plugResults = args["plugin_manager"].getSearchResults(text, **args)
+        result = mergeSearchResults(dbResults, plugResults)
+        cves=result['data']
+        fields["reason"] = True
         return {'status': 'plugin_action_complete', 'data': self.generateCSV(cves, fields)}
       except Exception as e:
         traceback.print_exc()

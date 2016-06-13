@@ -26,33 +26,49 @@
       {%endif%}
       prepareFilter()
     }
+
+    function getFieldsAsString(){
+      str=JSON.stringify({'id':            $("#CVE_ID").is(':checked'),
+                          'cvss':          $("#CVSS").is(':checked'),
+                          'summary':       $("#Summary").is(':checked'),
+                          'Modified':      $("#Major").is(':checked'),
+                          'Published':     $("#Published").is(':checked'),
+                          'last-modified': $("#Last_Modified").is(':checked')});
+      return str;
+    }
+
+    function resultsToLink(data, title){
+      var content = window.btoa(data);
+      var lnk = document.createElement("a");
+      lnk.setAttribute("id", "CSV_Report");
+      lnk.download = title;
+      lnk.href = "data:application/octet-stream;charset=utf-8;base64,"+content;
+      document.body.appendChild(lnk);
+      $('#CSV_Report')[0].click();
+      $('#CSV_Report').remove();
+    }
+
     function prepareFilter(){
-      $("#filterdiv").removeClass("collapse")
+      $("#filterdiv").removeClass("collapse");
       $("#filter").attr("method", "");
-      $("#filter-toggle").remove()
+      $("#filter-toggle").remove();
+      
       $("#filter").submit(function(){
         data = {'filter': $("#filter").serialize(),
-                'fields': JSON.stringify(
-                          {'id':            $("#CVE_ID").is(':checked'),
-                           'cvss':          $("#CVSS").is(':checked'),
-                           'summary':       $("#Summary").is(':checked'),
-                           'Modified':      $("#Major").is(':checked'),
-                           'Published':     $("#Published").is(':checked'),
-                           'last-modified': $("#Last_Modified").is(':checked')})}
+                'fields': getFieldsAsString()}
         $.getJSON('/plugin/{{plug_id}}/_cve_action/filter',data,function(data){
-          if( parseStatus(data)){
-            var data = window.btoa(data["data"])
-            var lnk = document.createElement("a");
-            lnk.setAttribute("id", "CSV_Report");
-            lnk.download = "Report.csv";
-            lnk.href = "data:application/octet-stream;charset=utf-8;base64,"+data;
-            document.body.appendChild(lnk)
-            $('#CSV_Report')[0].click()
-            $('#CSV_Report').remove()
-          }
+          if( parseStatus(data)){ resultsToLink(data["data"], "Report.csv"); }
         });
         return false;
-      })
+      });
+      
+      $("#textSearch").click(function(){
+        data = {'text': $("#text").val(),
+                'fields': getFieldsAsString()}
+        $.getJSON('/plugin/{{plug_id}}/_cve_action/textsearch',data,function(data){
+          if( parseStatus(data)){ resultsToLink(data["data"], "Report.csv"); }
+        });
+      });
     }
 
   </script>
@@ -70,4 +86,18 @@
   </div>
   <!-- Filter options -->
   {% include 'subpages/filters.html' %}
+  <!-- Search -->
+  <div class="well well-small">
+    <h4>Or search by text</h4>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="input-group">
+          <input type="text" class="form-control input-sm" placeholder="Search for..." id="text">
+          <span class="input-group-btn">
+            <button class="btn btn-default input-sm" type="button" id="textSearch">Search</button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
