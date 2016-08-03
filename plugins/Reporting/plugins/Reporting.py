@@ -24,7 +24,7 @@ from lib.Toolkit import mergeSearchResults
 from flask import Response
 from io import StringIO
 from dateutil.parser import parse as parse_datetime
-
+import urllib
 import traceback
 
 class Reporting(WebPlugin):
@@ -76,8 +76,11 @@ class Reporting(WebPlugin):
 
     # date logic
     if f['timeSelect'] != "all":
-      startDate = parse_datetime(f['startDate'], ignoretz=True, dayfirst=True)
-      endDate   = parse_datetime(f['endDate'],   ignoretz=True, dayfirst=True)
+      if f['startDate']:
+        startDate = parse_datetime(f['startDate'], ignoretz=True, dayfirst=True)
+      if f['endDate']:
+        endDate   = parse_datetime(f['endDate'],   ignoretz=True, dayfirst=True)
+      
       if f['timeSelect'] == "from":
         query.append({f['timeTypeSelect']: {'$gt': startDate}})
       if f['timeSelect'] == "until":
@@ -142,6 +145,7 @@ class Reporting(WebPlugin):
     if   action == "filter":
       try:
         filters = {x.split("=")[0]: x.split("=")[1] for x in args["fields"]['filter'][0].split("&")}
+        filters = {x: urllib.parse.unquote(y) for x,y in filters.items()}
         fields  = json.loads(args["fields"]["fields"][0])
         limit = 0
         skip = 0
