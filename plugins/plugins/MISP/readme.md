@@ -22,5 +22,5 @@ The plug-in has two settings in the plugins.ini file. An example could
 url: https://misp.istance.world
 key: api-key 
 ```
- * `url` is the url of the MISP API. **Required:**
- * `key` is the API key for your MISP instance. **Required:**
+ * `url` is the url of the MISP API. **Required**
+ * `key` is the API key for your MISP instance. **Required**

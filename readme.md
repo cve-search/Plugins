@@ -1,53 +1,34 @@
-# Plug-in Repository
-In this repository, we will maintain some of our CVE-Search plug-ins. These plug-ins can be added and removed however you see fit.  <br />
-**The plug-in development of CVE-Search is still in progress!** <br />
-**Update:** In the last update, the plug-in manager is supported in the official CVE-Search release. <br />
-**Note:** Development of the plug-in feature is mostly done by [PidgeyL](https://github.com/PidgeyL), so new features will come from [his branch](https://github.com/PidgeyL/cve-search) first. If you encounter compatibility issues, please keep this in mind.
+# Modules
+This repository contains all the modules developed and maintained by the
+ [**CVE-Search**](https://github.com/cve-search/cve-search) team, that
+ can be used to customize your CVE-Search instance. Below you can find a
+ list of the type of customizations you can do, as well as the current
+ modules we support:
 
-# Installation
-The installation of plugins is fairly easy. <br />
-As stated earlier, there are two types of plug-ins: Normal plug-ins and web plug-ins. The installation process is almost the same, the web plug-ins just take one more step. <br />
-In the installation guide, we will use the bookmark plug-in as an example.
-## Steps
- * Open the bookmarks folder.
- * Copy the content from the `plugins` folder to your CVE-Search's plug-in folder (We suggest ./plugins/, but you can place it anywhere).
- * **For web plug-ins:** copy the html page (in the `web.templates.plugins` folder) to the `./web/templates/plugins` folder of your CVE-Search
- * Edit the ./etc/plugins.txt file of your CVE-Search. An example can be found in this repository's etc folder.
+## Plug-ins
+ * **bookmarks** - Bookmark certain CVE's for later reference
+ * **MISP** - Enrich your CVE-Search instance with MISP info
+ * **notes** - Allow users to add notes to a CVE
+ * **Reporting** - Make queries on the data and export them to a CSV
+                   file
+ * **seen** - Keep track of all the CVEs you've already seen in the past
+ * **sendMail** - Easily send a mail with the CVE info to a specified
+                  mail address
+ * **team_collaboration** - Similar to `seen`, but on group level
 
-Some plug-ins can load configuration settings. If this is the case, a sample should be provided in the
- `etc` folder.
- 
-# Developer information
-## Error codes
- * **011** Plug-in page missing - Your plug-in did not respond to `getPage()`
- * **012** Plug-in page corrupt - The page your plug-in returned cannot be parsed correctly
- * **013** Plug-in page not found - The page your plug-in refers to cannot be found
+## Authentication modules
+ * **LDAP** - Authenticate users over LDAP
 
-## Variables
-When programming a plug-in for CVE-Search, there are a few required and recommended variables.
+# Support
+If you wish to share your plug-ins and modules with us, you can always
+ create a pull request. However, please:
+ * **Maintain** your plug-in, as CVE-Search grows and changes
+ * Make sure you submit plug-ins for the **latest version** of
+   CVE-Search
+ * You document your plug-ins and their behavior well, by adding a
+   **descriptive readme file**
 
- * Required
-    * self.name - **the full name of the plug-in**
- * Defaults to be overridden if needed
-    * self.requiresAuth - **is authentication require to use the plug-in?** - *default: False*
- * Recommended
-    * self.collectionName - **The name of the collection in the database** - We recommend this to ensure you use the same collection accross your plug-in
+#License
+cve-search and its modules are free software released under the "Modified BSD license"
 
-## Functions
- There are a few functions you should and should not override. Here is a list
- 
- * Do not override:
-    * getName()
-    * getUID()
-    * setUID(uid)
-    * isWebPlugin()
- * To override (when applicable) - All plug-ins:
-    * loadSettings(reader) - **loads specified settings from the plug-in settings file**
-    * onDatabaseUpdate() - **gets triggered when the database gets updated**
-    * search(text) - **gets triggered when a database search is requested and should be used to search plug-in collections**
- * To override (when applicable) - Web plug-ins:
-    * getPage(\*\*args) - __return a tupel of the file location of the HTML and a dictionary of the args to fill it in. *Example: return ("bookmarks.html", {"cve": cve})*__
-    * getCVEActions(\*\*args) - __returns a list of dictionaries with action information *Example: return [{'text': 'Bookmark', 'action': 'bookmark', 'icon': 'star-empty'}]*__
-    * onCVEAction(action \*\*args) - __gets triggered when an action button is pressed on the CVE information page__
-    * cvePluginInfo(cve, \*\*args) - __gets the HTML of the plug-in information of the CVE *Example: return {'title': "Bookmarks", 'data': "&lt;b&gt; Bookmarked &lt;/b&gt;"}*__
-    
+    Copyright (c) 2016 Pieter-Jan Moreels - https://github.com/pidgeyl/
