@@ -7,7 +7,7 @@
 #
 # Copyright (c) 2016 	Pieter-Jan Moreels - pieterjan.moreels@gmail.com
 
-# Necessary imports 
+# Necessary imports
 import os
 import sys
 import __main__
@@ -26,7 +26,7 @@ class bookmark(WebPlugin):
     self.collectionName = "user_bookmarks"
 
   def getPage(self, **args):
-    cvesp = cves.last(rankinglookup=True, namelookup=True, vfeedlookup=True, capeclookup=True,subscorelookup=True)
+    cvesp = cves.last(rankinglookup=True, namelookup=True, via4lookup=True, capeclookup=True,subscorelookup=True)
     data = db.p_queryOne(self.collectionName, {"user": args["current_user"].get_id()})
     bookmarks = data.get("bookmarks", []) if data else []
     cve=[cvesp.getcve(cveid=x) for x in bookmarks]
